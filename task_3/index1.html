@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Параметрическая вставка</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+</head>
+<style>
+    .iframe {
+        left:30px;
+        top: 20px;
+    }
+</style>
+<body>
+    <div id="app">
+        <h2>Сайт-визитка</h2>
+        <p>Ссылки на ресурс:</p>
+        <iframe v-bind:src="url" v-bind:title="title" v-bind:frameborder="border" v-bind:scrolling="scroll" v-bind:width="width" v-bind:height="height" v-bind:class="move">{{ Name }}</iframe><br>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                url: '../task_2/index.html',
+                title: 'Сайт визитка',
+                Name: 'Ссылка на ресурс',
+                target: '_blank',
+                border: 0,
+                scroll: "no",
+                width:200,
+                height: 300,
+                move: "iframe"
+            }
+        });
+    </script>
+</body>
+</html>

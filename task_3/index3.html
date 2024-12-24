@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Radio Buttons Global Style</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .radio-group {
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="radio-group">
+            <!-- Радиокнопки с описанием -->
+            <label
+                v-for="(option, index) in options"
+                :key="index"
+                :style="globalStyle"
+            >
+                <input
+                    type="radio"
+                    :value="index"
+                    v-model="selectedStyle"
+                />
+                {{ option.label }}
+            </label>
+        </div>
+    </div>
+
+    <script>
+        const App = {
+            data() {
+                return {
+                    // Список радиокнопок с соответствующими стилями
+                    options: [
+                        { label: "Times New Roman; 14 pt; bold; italic", style: { fontFamily: "Times New Roman", fontSize: "14pt", fontWeight: "bold", fontStyle: "italic" } },
+                        { label: "Arial; 10 pt; underline; bold", style: { fontFamily: "Arial", fontSize: "10pt", fontWeight: "bold", textDecoration: "underline" } },
+                        { label: "Tahoma; 12 pt; strike; bold", style: { fontFamily: "Tahoma", fontSize: "12pt", fontWeight: "bold", textDecoration: "line-through" } },
+                        { label: "Courier New; 18 pt; italic", style: { fontFamily: "Courier New", fontSize: "18pt", fontStyle: "italic" } },
+                        { label: "Book Antiqua; 16 pt; underline; italic", style: { fontFamily: "Book Antiqua", fontSize: "16pt", fontStyle: "italic", textDecoration: "underline" } }
+                    ],
+                    selectedStyle: null // Индекс выбранного стиля
+                };
+            },
+            computed: {
+                // Применение стиля ко всем ярлыкам
+                globalStyle() {
+                    return this.selectedStyle !== null
+                        ? this.options[this.selectedStyle].style
+                        : {};
+                }
+            }
+        };
+
+        Vue.createApp(App).mount("#app");
+    </script>
+</body>
+</html>
