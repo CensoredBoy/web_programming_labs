@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Select Input with Watch</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        input {
+            padding: 5px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        select {
+            padding: 5px;
+            font-size: 16px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input
+            type="text"
+            v-model="currentInput"
+            placeholder="Введите текст и нажмите пробел"
+            @keydown.space.prevent="addItem"
+            @keydown.ctrl.z="undo"
+        />
+
+        <select size="5">
+            <option v-for="(item, index) in items" :key="index">{{ item }}</option>
+        </select>
+    </div>
+
+    <script>
+        const App = {
+            data() {
+                return {
+                    currentInput: "", // Текущий ввод текста
+                    items: [], // Список элементов
+                    history: [], // История изменений для отмены
+                };
+            },
+            watch: {
+                // Наблюдатель за длиной текущего ввода
+                currentInput(newVal) {
+                    if (newVal.length > 15) {
+                        // Сохранение текущего состояния списка в историю
+                        this.history.push([...this.items]);
+                        // Очищение списка
+                        this.items = [];
+                        // Очистка текущего ввода
+                        this.currentInput = "";
+                        alert("Список очищен: превышена длина строки в 15 символов.");
+                    }
+                },
+            },
+            methods: {
+                // Добавление нового пункта в список
+                addItem() {
+                    if (this.currentInput.trim() === "") return;
+
+                    // Сохранение текущего состояния списка в историю
+                    this.history.push([...this.items]);
+
+                    // Добавление элемента в список
+                    this.items.push(this.currentInput.trim());
+
+                    // Очистка поля ввода
+                    this.currentInput = "";
+                },
+                // Отмена последнего действия
+                undo() {
+                    if (this.history.length > 0) {
+                        // Возврат последнего состояния из истории
+                        this.items = this.history.pop();
+                    }
+                },
+            },
+        };
+
+        Vue.createApp(App).mount("#app");
+    </script>
+</body>
+</html>

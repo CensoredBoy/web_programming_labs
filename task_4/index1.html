@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js SVG Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 80px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="controls">
+            <!-- Диапазоны -->
+            <div>
+                <label>
+                    Диапазон X:
+                    от <input type="number" v-model.number="rangeX.min" />
+                    до <input type="number" v-model.number="rangeX.max" />
+                </label>
+            </div>
+            <div>
+                <label>
+                    Диапазон Y:
+                    от <input type="number" v-model.number="rangeY.min" />
+                    до <input type="number" v-model.number="rangeY.max" />
+                </label>
+            </div>
+
+            <!-- Флажки для управления видимостью -->
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" v-model="showAxes" /> Показать оси
+                </label>
+                <label>
+                    <input type="checkbox" v-model="showTicks" /> Показать засечки
+                </label>
+                <label>
+                    <input type="checkbox" v-model="showLabels" /> Показать подписи
+                </label>
+            </div>
+        </div>
+
+        <!-- SVG график -->
+        <svg width="640" height="480" viewBox="0 0 640 480" xmlns="http://www.w3.org/2000/svg" style="border: 1px solid black;">
+            <!-- Оси -->
+            <line
+                v-if="showAxes"
+                x1="0" :x2="width"
+                :y1="yToSvg(0)" :y2="yToSvg(0)"
+                stroke="black"
+            />
+            <line
+                v-if="showAxes"
+                :x1="xToSvg(0)" :x2="xToSvg(0)"
+                y1="0" :y2="height"
+                stroke="black"
+            />
+
+            <!-- Засечки и подписи по X -->
+            <g v-if="showTicks && showAxes">
+                <g v-for="x in xTicks" :key="'x' + x">
+                    <line
+                        :x1="xToSvg(x)"
+                        :x2="xToSvg(x)"
+                        :y1="yToSvg(0) - 5"
+                        :y2="yToSvg(0) + 5"
+                        stroke="black"
+                    />
+                    <text
+                        v-if="showLabels"
+                        :x="xToSvg(x)"
+                        :y="yToSvg(0) + 20"
+                        font-size="10"
+                        text-anchor="middle">
+                        {{ x }}
+                    </text>
+                </g>
+            </g>
+
+            <!-- Засечки и подписи по Y -->
+            <g v-if="showTicks && showAxes">
+                <g v-for="y in yTicks" :key="'y' + y">
+                    <line
+                        :x1="xToSvg(0) - 5"
+                        :x2="xToSvg(0) + 5"
+                        :y1="yToSvg(y)"
+                        :y2="yToSvg(y)"
+                        stroke="black"
+                    />
+                    <text
+                        v-if="showLabels"
+                        :x="xToSvg(0) - 20"
+                        :y="yToSvg(y) + 5"
+                        font-size="10"
+                        text-anchor="end">
+                        {{ y }}
+                    </text>
+                </g>
+            </g>
+
+            <!-- График функции -->
+            <polyline
+                :points="graphPoints"
+                fill="none"
+                stroke="blue"
+                stroke-width="2"
+            />
+        </svg>
+    </div>
+
+    <script>
+        const App = {
+            data() {
+                return {
+                    width: 640, // Ширина SVG
+                    height: 480, // Высота SVG
+                    rangeX: { min: -10, max: 10 }, // Диапазон X
+                    rangeY: { min: -10, max: 100 }, // Диапазон Y
+                    showAxes: true, // Видимость осей
+                    showTicks: true, // Видимость засечек
+                    showLabels: true, // Видимость подписей
+                };
+            },
+            computed: {
+                // Засечки по X
+                xTicks() {
+                    return this.generateTicks(this.rangeX.min, this.rangeX.max);
+                },
+                // Засечки по Y
+                yTicks() {
+                    return this.generateTicks(this.rangeY.min, this.rangeY.max);
+                },
+                // Точки для графика
+                graphPoints() {
+                    const points = [];
+                    for (let x = this.rangeX.min; x <= this.rangeX.max; x += 0.1) {
+                        const y = x * x;
+                        if (y >= this.rangeY.min && y <= this.rangeY.max) {
+                            points.push(`${this.xToSvg(x)},${this.yToSvg(y)}`);
+                        }
+                    }
+                    return points.join(" ");
+                },
+            },
+            methods: {
+                // Генерация засечек
+                generateTicks(min, max) {
+                    const ticks = [];
+                    for (let i = Math.ceil(min); i <= Math.floor(max); i++) {
+                        ticks.push(i);
+                    }
+                    return ticks;
+                },
+                // Преобразование X в координаты SVG
+                xToSvg(x) {
+                    const scaleX = this.width / (this.rangeX.max - this.rangeX.min);
+                    return (x - this.rangeX.min) * scaleX;
+                },
+                // Преобразование Y в координаты SVG
+                yToSvg(y) {
+                    const scaleY = this.height / (this.rangeY.max - this.rangeY.min);
+                    return this.height - (y - this.rangeY.min) * scaleY;
+                },
+            },
+        };
+
+        Vue.createApp(App).mount("#app");
+    </script>
+</body>
+</html>
