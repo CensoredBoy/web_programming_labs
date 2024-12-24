@@ -1,0 +1,107 @@
+<html>
+  <title>Ковër Серпинского</title>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.18/vue.min.js"></script>
+    <div id="crpt">
+      <br />
+      <input type="number" v-model.number="pointStart" placeholder="Начало" />
+      <input type="number" v-model.number="pointEnd" placeholder="Конец" />
+      <button @click="drawCarpet">Build</button>
+      <svg :width="hor" :height="ver">
+        <rect
+          v-for="el in els"
+          :key="el.id"
+          fill="#000000"
+          fill-opacity="1"
+          :x="el.x"
+          :y="el.y"
+          width="1"
+          height="1"
+        />
+      </svg>
+    </div>
+    <script>
+      var Carpet = new Vue({
+        el: "#crpt",
+        data: {
+          hor: 500,
+          ver: 500,
+          A: [0, 0],
+          B: [0, 1],
+          C: [1, 1],
+          D: [1, 0],
+          els: [],
+          pointStart: 0,
+          pointEnd: 10000,
+        },
+        computed: {
+          ABCD: function () {
+            return [this.A, this.B, this.C, this.D];
+          },
+        },
+        methods: {
+          drawCarpet: function () {
+            this.els = [];
+            let e = [];
+
+            let p = { x: this.A[0] * this.hor, y: this.A[1] * this.ver };
+            this.els.push(p);
+            e.push([this.A[0], this.A[1]]);
+
+            let totalPoints = this.pointEnd - this.pointStart;
+
+            for (let i = this.pointStart; i < this.pointEnd; i++) {
+              let U = this.ABCD[Math.floor(Math.random() * this.ABCD.length)];
+              let G = e[Math.floor(Math.random() * e.length)];
+
+              let dx = Math.abs(U[0] - G[0]) / 1.7;
+              let dy = Math.abs(U[1] - G[1]) / 1.7;
+              let nx = G[0];
+              let ny = G[1];
+
+              if (U[0] > G[0]) {
+                nx += dx;
+              } else {
+                nx -= dx;
+              }
+
+              if (U[1] > G[1]) {
+                ny += dy;
+              } else {
+                ny -= dy;
+              }
+
+              let p = { x: nx * this.hor, y: ny * this.ver };
+              this.els.push(p);
+              e.push([nx, ny]);
+            }
+            let now = new Date();
+            console.log(
+              "Завершено построение: " +
+                now +
+                " мс: " +
+                now.getMilliseconds()
+            );
+          },
+        },
+        mounted: function () {
+          let now = new Date();
+          console.log(
+            "Отображено на странице: " +
+              now +
+              " мс: " +
+              now.getMilliseconds()
+          );
+        },
+      });
+    </script>
+    <style type="text/css">
+      svg {
+        border: 1px solid #000000;
+      }
+      input {
+        width: 60px;
+      }
+    </style>
+  </body>
+</html>
