@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Random Alignment</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .message {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Контейнер -->
+        <div
+            :style="{ textAlign: alignment }"
+            style="width: 300px; border: 1px solid #ccc; padding: 20px;"
+        >
+            <!-- Кнопка или сообщение -->
+            <button
+                v-on:mouseover="changeAlignment"
+                v-on:click="hideButton"
+                v-show="showButton"
+            >
+                Попробуй нажми
+            </button>
+            <div
+                class="message"
+                v-show="!showButton"
+            >
+                Удача!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const App = {
+            data() {
+                return {
+                    alignment: "left", // Начальное выравнивание
+                    showButton: true, // Видимость кнопки
+                };
+            },
+            methods: {
+                // Случайный выбор выравнивания
+                changeAlignment() {
+                    const alignments = ["left", "center", "right"];
+                    this.alignment = alignments[Math.floor(Math.random() * alignments.length)];
+                },
+                // Скрытие кнопки и вывод сообщения
+                hideButton() {
+                    this.showButton = false;
+                }
+            }
+        };
+
+        // Инициализация Vue-приложения
+        Vue.createApp(App).mount("#app");
+    </script>
+</body>
+</html>
