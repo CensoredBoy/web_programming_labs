@@ -3,12 +3,19 @@ import HelloWorld from './components/DisciplineList.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import TransportList from './components/WorkerList.vue'
 import DisciplineList from './components/DisciplineList.vue'
+import { ref } from 'vue'
+
+const currentComponent = ref('TransportList');
+const components = { TransportList, DisciplineList };
 </script>
 
 <template>
   <main>
-    <TransportList />
-    <DisciplineList />
+    <select v-model="currentComponent">
+      <option value="TransportList">TransportList</option>
+      <option value="DisciplineList">DisciplineList</option>
+    </select>
+    <component :is="components[currentComponent]" />
   </main>
 </template>
 
