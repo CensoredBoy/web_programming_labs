@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hooks Example</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{ message }}</h1>
+        <button @click="updateMessage">Update Message</button>
+        <button @click="destroyComponent">Destroy Component</button>
+        <div v-if="showComponent">
+            <child-component></child-component>
+        </div>
+    </div>
+
+    <script>
+        const {
+            createApp,
+            ref,
+            onBeforeMount,
+            onMounted,
+            onBeforeUpdate,
+            onUpdated,
+            onBeforeUnmount,
+            onUnmounted
+        } = Vue
+
+        const ChildComponent = {
+            template: `<p>Child Component</p>` ,
+            setup() {
+                onBeforeMount(() => console.log('Child: onBeforeMount'));
+                onMounted(() => console.log('Child: onMounted'));
+                onBeforeUpdate(() => console.log('Child: onBeforeUpdate'));
+                onUpdated(() => console.log('Child: onUpdated'));
+                onBeforeUnmount(() => console.log('Child: onBeforeUnmount'));
+                onUnmounted(() => console.log('Child: onUnmounted'));
+            },
+        };
+
+        createApp({
+            components: { ChildComponent },
+            setup() {
+                const message = ref('message');
+                const showComponent = ref(true);
+
+                const updateMessage = () => message.value = 'Message updated!';
+                const destroyComponent = () => showComponent.value = false;
+
+                onBeforeMount(() => console.log('App: onBeforeMount'));
+                onMounted(() => console.log('App: onMounted'));
+                onBeforeUpdate(() => console.log('App: onBeforeUpdate'));
+                onUpdated(() => console.log('App: onUpdated'));
+                onBeforeUnmount(() => console.log('App: onBeforeUnmount'));
+                onUnmounted(() => console.log('App: onUnmounted'));
+
+                return { message, showComponent, updateMessage, destroyComponent };
+            }
+        }).mount("#app")
+    </script>
+</body>
+
+</html>
